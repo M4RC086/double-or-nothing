@@ -8,16 +8,36 @@
 </head>
 <body>
   <div class="score-parent">
-    <h1>YOUR SCORE</h1>
-    <h1>999,999,999</h1>
+    <h1>YOUR MONEY</h1>
+    <h1 id="score">${{score}}</h1>
   </div>
   <div class="button-parent">
-    <button type="button"> DOUBLE IT or NOTHING</button> </br>
-    <button type="button"> stay</button>
+    <button type="button" id="doubleButton"> DOUBLE IT or NOTHING</button> </br>
+    <button type="button" id="stayButton"> stay</button>
   </div>
 
   </br></br></br></br></br></br></br></br>
   <div>LEADERBOARD</div>
+
+  <script>
+    document.getElementById('doubleButton').addEventListener('click', async () => {
+      const response = await fetch('/change-score', {
+        method: 'POST'
+      });
+      const data = await response.json();
+      document.getElementById('score').innerText = data.new_value;
+      });
+    
+    document.getElementById('stayButton').addEventListener('click', async () => {
+      const response = await fetch('/stay', {
+        method: 'POST'
+      });
+      document.getElementById('score').innerText = "$20"
+      });
+  </script>
+
+
+
   <!-- I need to figure out how to do it. But that's the last part with the database -->
 </body>
 
