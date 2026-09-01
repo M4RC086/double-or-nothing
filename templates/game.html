@@ -13,7 +13,6 @@
   </div>
   <div class="button-parent">
     <button type="button" id="doubleButton"> DOUBLE IT or NOTHING</button> </br>
-    <button type="button" id="stayButton"> stay</button>
   </div>
 
   </br></br></br></br></br></br></br></br>
@@ -28,12 +27,6 @@
       document.getElementById('score').innerText = data.new_value;
       });
     
-    document.getElementById('stayButton').addEventListener('click', async () => {
-      const response = await fetch('/stay', {
-        method: 'POST'
-      });
-      document.getElementById('score').innerText = "$20"
-      });
   </script>
 
 
