@@ -12,12 +12,29 @@
 <div class="login-parent">
   <h1>Double or nothing</h1>
   <div>
-    <input type="text" placeholder="Username">
-    <button type="submit">Enter</button>
+    <input type="text" placeholder="Username" id="usernameInput">
+    <button type="submit" id="enterButton">Enter</button>
   </div>
 </div>
 
+<script>
+    document.getElementById('enterButton').addEventListener('click', async () => {
+      const username = document.getElementById('usernameInput').value;
+      const response = await fetch('/login-username', {   
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username: username })
+      });
 
+      const data = await response.json();
+      
+      if (data.redirect) {
+        window.location.href = data.redirect;
+      }
+    });
+</script>
 
 
 </body>
