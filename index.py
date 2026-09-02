@@ -11,10 +11,13 @@ app = Flask(__name__)
 
 
 @app.route("/")
-def index():
+def login():
+    return render_template("login.html")
+
+
+@app.route("/game")
+def main():
     return render_template("game.html", score=get_db_score("M4RC086"))
-
-
 
 @app.route('/change-score', methods=['POST'])
 def changeScore(): 

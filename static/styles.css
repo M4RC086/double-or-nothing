@@ -42,3 +42,23 @@ body{
     align-items: center;
     gap: 10px
 }
+
+.login-parent {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+    font-size: 30px;
+    font-family:Arial, Helvetica, sans-serif
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+input{
+    font-size: 30px;
+}
