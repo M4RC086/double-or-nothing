@@ -17,20 +17,55 @@
 
   <div>LEADERBOARD</div>
 
+ <table id="leaderboard">
+    <tr><th>Username</th><th>Score</th></tr>
+    {% for entry in leaderboard %}
+      <tr>
+        <td>{{ entry[0] }}</td>
+        <td>{{ entry[1] }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+
+
+
+
   <script>
     document.getElementById('doubleButton').addEventListener('click', async () => {
       const response = await fetch('/change-score', {
         method: 'POST'
       });
       const data = await response.json();
-      document.getElementById('score').innerText = data.new_value;
+      document.getElementById('score').innerText = data.new_score;
+      refreshLeaderboard()
+
       });
-    
+
+
+  async function refreshLeaderboard() {
+    const response = await fetch("/get-leaderboard");
+    const data = await response.json();
+    const leaderboard = data.leaderboard;
+    console.log(leaderboard);
+  
+    const table = document.getElementById("leaderboard");
+    table.innerHTML = `
+    <tr><th>Username</th><th>Score</th></tr>
+    ${leaderboard.map(entry => `
+      <tr>
+        <td>${entry[0]}</td>
+        <td>${entry[1]}</td>
+      </tr>
+    `).join("")}
+  `;
+}
+  
+  document.addEventListener("DOMContentLoaded", () => {
+  refreshLeaderboard();
+});
+
   </script>
 
-
-
-  <!-- I need to figure out how to do it. But that's the last part with the database -->
 </body>
 
 </html>

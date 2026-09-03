@@ -21,12 +21,13 @@ def login():
 @app.route("/game")
 def game():
     if not session.get("verified"):
-        print("not veryfsd")
         return redirect("/")
 
     return render_template("game.html", score=get_db_score(session['username']))
 
 
+
+# From js
 @app.route('/change-score', methods=['POST'])
 def changeScore(): 
     score = get_db_score(session["username"])
@@ -41,7 +42,7 @@ def changeScore():
     set_db_score(session["username"], score)
 
     str_score = "$"+str(score)
-    return jsonify({"new_value": str_score})# It does some js stuff I'm afraid of
+    return jsonify({"new_score": str_score})# I'm not afraid anymore >:(
 
 
 @app.route('/login-username', methods=['POST'])
@@ -59,6 +60,12 @@ def loginUsername():
     
 
     return jsonify({"redirect": "/game"})
+
+
+
+@app.route("/get-leaderboard")
+def getLeaderboard():
+    return jsonify({"leaderboard": get_db_leaderboard()})
 
 
 
@@ -84,6 +91,14 @@ def _db_connection():
     except sqlite3.error as e:
         print(e)
     return conn
+
+def get_db_leaderboard():
+    conn = _db_connection()
+    cursor = conn.cursor()
+
+    cur = cursor.execute("SELECT * FROM stats ORDER BY score DESC")
+    conn.commit()
+    return cur.fetchall()
 
 def get_db_score(user):
     conn = _db_connection()
@@ -115,5 +130,6 @@ def create_db_user(new_user):
 
 if __name__ == "__main__":
     init_db()
+    print(get_db_leaderboard()) # Todelete
     app.run(debug=True, host="0.0.0.0", port=5000)
     
