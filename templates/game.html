@@ -7,16 +7,33 @@
   <title>Double or nothing</title>
 </head>
 <body>
+
+
   <div class="score-parent">
-    <h1>YOUR MONEY</h1>
-    <h1 id="score">${{score}}</h1>
-  </div>
-  <div class="button-parent">
-    <button type="button" id="doubleButton"> DOUBLE IT or NOTHING</button>
+    <h1>YOUR SCORE</h1>
+    <h1 id="score">{{score}}</h1>
   </div>
 
-  <div>LEADERBOARD</div>
 
+
+
+
+  <div class="coin-container">
+    <div class="coin" id="coin">
+      <div class="coin-front">❌</div>
+      <div class="coin-back">x2</div>
+
+    </div>
+    <p id="coinResult" class="coin-result"></p>
+  </div>
+
+
+
+
+
+
+
+  <div>Top 10</div>
  <table id="leaderboard">
     <tr><th>Username</th><th>Score</th></tr>
     {% for entry in leaderboard %}
@@ -30,38 +47,155 @@
 
 
 
-  <script>
-    document.getElementById('doubleButton').addEventListener('click', async () => {
-      const response = await fetch('/change-score', {
-        method: 'POST'
-      });
-      const data = await response.json();
-      document.getElementById('score').innerText = data.new_score;
-      refreshLeaderboard()
+<script>
 
-      });
+console.log("🎮 Game loaded!");
 
-
+document.addEventListener('DOMContentLoaded', function() {
+  console.log("📄 DOM ready!");
+  
+  // Get elements
+  const coin = document.getElementById('coin');
+  const scoreEl = document.getElementById('score');
+  const coinResult = document.getElementById('coinResult');
+  const resultMessage = document.getElementById('resultMessage');
+  
+  // Function to refresh leaderboard
   async function refreshLeaderboard() {
-    const response = await fetch("/get-leaderboard");
-    const data = await response.json();
-    const leaderboard = data.leaderboard;
-    console.log(leaderboard);
+    try {
+      const response = await fetch("/get-leaderboard");
+      const data = await response.json();
+      const table = document.getElementById("leaderboard");
+      
+      if (table) {
+        let html = `<tr><th>Username</th><th>Score</th></tr>`;
+        if (data.leaderboard && data.leaderboard.length > 0) {
+          data.leaderboard.forEach(entry => {
+            html += `
+              <tr>
+                <td>${entry[0]}</td>
+                <td>${entry[1]}</td>
+              </tr>
+            `;
+          });
+        } else {
+          html += `<tr><td colspan="2">No entries yet</td></tr>`;
+        }
+        table.innerHTML = html;
+      }
+    } catch (error) {
+      console.error("Leaderboard error:", error);
+    }
+  }
   
-    const table = document.getElementById("leaderboard");
-    table.innerHTML = `
-    <tr><th>Username</th><th>Score</th></tr>
-    ${leaderboard.map(entry => `
-      <tr>
-        <td>${entry[0]}</td>
-        <td>${entry[1]}</td>
-      </tr>
-    `).join("")}
-  `;
-}
-  
-  document.addEventListener("DOMContentLoaded", () => {
+  // Initial leaderboard load
   refreshLeaderboard();
+  
+  // Coin flip function
+  async function flipCoin() {
+    console.log("🪙 Flipping coin!");
+    
+
+    const response = await fetch('/flip-coin', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+        
+      const data = await response.json();
+      const isWin = data.isWin;
+      const new_score = data.score;
+
+
+  
+    // Disable button
+    if (coin) coin.style.pointerEvents = 'none';
+    
+    // Calculate the rotation
+    // For WIN: end on front (0 or 360 degrees)
+    // For LOSE: end on back (180 degrees)
+    const spins = 3; // Number of full rotations
+    const baseRotation = !isWin ? 0 : 180;
+    const totalRotation = spins * 360 + baseRotation;
+    
+    // Reset coin position
+    coin.style.transition = 'none';
+    coin.style.transform = 'rotateY(0deg)';
+    void coin.offsetHeight; // Force reflow
+    
+    // Apply the flip with transition
+    coin.style.transition = 'transform 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    coin.style.transform = `rotateY(${totalRotation}deg)`;
+    
+    // Wait for animation to complete
+    setTimeout(async () => {
+      // Show result
+      const resultText = isWin ? '🎉 X2 SCORE!' : '💀 LOSE YOUR SOCORE!';
+      
+      if (coinResult) {
+        coinResult.textContent = resultText;
+        coinResult.className = 'coin-result show ' + (isWin ? 'win' : 'lose');
+      }
+      
+      if (resultMessage) {
+        resultMessage.textContent = resultText;
+        resultMessage.className = 'result-message show ' + (isWin ? 'win' : 'lose');
+      }
+      
+      // Update score
+      try {
+                
+        if (scoreEl) {
+          scoreEl.textContent = data.new_score;
+          scoreEl.style.color = isWin ? '#2ecc71' : '#e74c3c';
+          
+          // Animate score
+          scoreEl.classList.remove('scale-up-vertical-center');
+          void scoreEl.offsetHeight;
+          scoreEl.classList.add('scale-up-vertical-center');
+          
+          setTimeout(() => {
+            scoreEl.style.color = '#3498db';
+          }, 1000);
+        }
+        
+        // Refresh leaderboard
+        await refreshLeaderboard();
+        
+      } catch (error) {
+        console.error("Error updating score:", error);
+      }
+      
+      // Re-enable button after a delay
+      setTimeout(() => {
+        if (coin) coin.style.pointerEvents = 'auto';
+        
+        // Hide result messages
+        if (coinResult) {
+          setTimeout(() => {
+            coinResult.classList.remove('show');
+          }, 2000);
+        }
+        if (resultMessage) {
+          setTimeout(() => {
+            resultMessage.classList.remove('show');
+          }, 2000);
+        }
+      }, 1500);
+      
+    }, 1600); // Slightly longer than the transition
+  }
+  
+  // Add click event to coin
+  if (coin) {
+    coin.addEventListener('click', flipCoin);
+  } else {
+    console.error("❌ Coin element not found!");
+  }
+  
+  
+  console.log("✅ Game ready!");
 });
 
   </script>

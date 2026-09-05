@@ -28,12 +28,13 @@ def game():
 
 
 # From js
-@app.route('/change-score', methods=['POST'])
-def changeScore(): 
+@app.route('/flip-coin', methods=['POST'])
+def flipCoin(): 
     score = get_db_score(session["username"])
+    
 
-    the_ultimate_choice = choice([True, True, True, True, False])
-    if (the_ultimate_choice or score <= BEGIN_RANDOM_MIN):
+    is_win = choice([True, True, True, False])
+    if (is_win or score <= BEGIN_RANDOM_MIN):
         score *= 2
     else:
         score = 20
@@ -41,8 +42,7 @@ def changeScore():
 
     set_db_score(session["username"], score)
 
-    str_score = "$"+str(score)
-    return jsonify({"new_score": str_score})# I'm not afraid anymore >:(
+    return jsonify({"isWin": is_win, "new_score": score}) # I am
 
 
 @app.route('/login-username', methods=['POST'])
@@ -96,7 +96,7 @@ def get_db_leaderboard():
     conn = _db_connection()
     cursor = conn.cursor()
 
-    cur = cursor.execute("SELECT * FROM stats ORDER BY score DESC")
+    cur = cursor.execute("SELECT * FROM stats ORDER BY score DESC LIMIT 10")
     conn.commit()
     return cur.fetchall()
 
