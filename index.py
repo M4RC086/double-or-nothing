@@ -23,12 +23,12 @@ def game():
     if not session.get("verified"):
         return redirect("/")
 
-    return render_template("game.html", score=get_db_score(session['username']))
+    return render_template("game.html", score=get_db_score(session['username']), username=session['username'])
 
 
 
 # From js
-@app.route('/flip-coin', methods=['POST'])
+@app.route('/api/flip-coin', methods=['POST'])
 def flipCoin(): 
     score = get_db_score(session["username"])
     
@@ -36,6 +36,7 @@ def flipCoin():
     is_win = choice([True, True, True, False])
     if (is_win or score <= BEGIN_RANDOM_MIN):
         score *= 2
+        is_win = True
     else:
         score = 20
     
@@ -45,25 +46,28 @@ def flipCoin():
     return jsonify({"isWin": is_win, "new_score": score}) # I am
 
 
-@app.route('/login-username', methods=['POST'])
+@app.route('/api/login-username', methods=['POST'])
 def loginUsername():
     
-
+    
     data = request.get_json()
-    username = data.get("username")
-    print(username)
+
     
-    session['username'] = username
-    session['verified'] = True
-
-    create_db_user(session['username'])
+    if not all(char == ' ' for char in data.get("username")):
+        username = data.get("username")
+        print("Username", username) #Todelete
     
+        session['username'] = username
+        session['verified'] = True
 
-    return jsonify({"redirect": "/game"})
+        create_db_user(session['username'])
+
+        return jsonify({"redirect": "/game", "error": False})
+    return jsonify({"error": True})
 
 
 
-@app.route("/get-leaderboard")
+@app.route("/api/get-leaderboard")
 def getLeaderboard():
     return jsonify({"leaderboard": get_db_leaderboard()})
 

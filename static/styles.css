@@ -1,20 +1,29 @@
-h1{
-    font-size: 45px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+@font-face {
+  font-family: "Caacupe";
+  src: url(fonts/CaacupeOne-Regular.ttf);
+}
+@font-face {
+  font-family: "Rowdies";
+  src: url(fonts/Rowdies-Light.ttf);
 }
 
-button{
-    font-size: 30px;
-}
 body{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    border-color: #dddd;
+  font-family: "Rowdies";
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;       
+  background-color: #ebebebdd;
 }
+
+h1{
+  font-size: 60px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+
 
 .score-parent{
     display: flex;
@@ -22,25 +31,21 @@ body{
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
-    border: 1px solid;
-    border-radius: 10px;
+    border: 2px solid;
+    border-radius: 8px;
 
-    margin: 30px;
+    margin-bottom: 20px;
     
     padding-bottom: 0px;
     padding-top: 0px;
-    padding-left: 50px;
-    padding-right: 50px;
+    padding-left: 10%;
+    padding-right: 10%;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    background-color:#d7d5dc;
 
 }
 
-.button-parent{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 10px
-}
+
 
 .login-parent {
     display: flex;
@@ -49,38 +54,44 @@ body{
     align-items: center;
     
     font-size: 30px;
-    font-family:Arial, Helvetica, sans-serif
-}
-
-.center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    font-family: Rowdies;
 }
 
 input{
-    font-size: 30px;
+  font-size: 30px;
+    min-width: 200px;
 }
 
-table, th, td {
-  border:1px solid black;
+button{
+  font-size: 30px;
 }
 
-body {
-  display: flex;
-  justify-content: center; 
-  align-items: center;     
-  min-height: 80vh;       
+table {
+  border: 3px;
+  
+  font-size: 20px;
+  width: 20%;
+  box-shadow: 0 0 20px rgba(0,0,0,0.2);
+}
+
+th {
+  border: 3px #00000000;
+  border-style:groove;
+  background-color:#bfbdc3;
+  font-size: 25px;
+}
+
+td {
+  background-color:#d7d5dc;
+  
 }
 
 
 
 
 
-.scale-up-vertical-center {
-  animation: scale-up-vertical-center 0.3s ease forwards;
-}
-/* ... your other styles ... */
+
+
 
 .scale-up-vertical-center {
   animation: scale-up-vertical-center 0.4s ease;
@@ -102,8 +113,6 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 20px 0;
-  perspective: 1000px;
 }
 
 .coin {
@@ -116,21 +125,17 @@ body {
 
 }
 
-/* Remove the flipping animation from CSS, we'll handle it in JS */
-.coin.flipping {
-  /* We'll control this with JavaScript */
-}
 
 .coin-front, .coin-back {
   position: absolute;
   width: 100%;
   height: 100%;
-  border-radius: 50%;
+  border-radius: 49%;
   backface-visibility: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 50px;
+  font-size: 55px;
   box-shadow: 0 0 20px rgba(0,0,0,0.2);
 }
 
@@ -171,3 +176,4 @@ body {
   -moz-user-select: none;
   -ms-user-select: none;
 }
+

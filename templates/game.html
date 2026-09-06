@@ -9,6 +9,8 @@
 <body>
 
 
+  <p>Playing as {{ username }}</p>
+
   <div class="score-parent">
     <h1>YOUR SCORE</h1>
     <h1 id="score">{{score}}</h1>
@@ -33,7 +35,7 @@
 
 
 
-  <div>Top 10</div>
+  <h1>Top 10</h1>
  <table id="leaderboard">
     <tr><th>Username</th><th>Score</th></tr>
     {% for entry in leaderboard %}
@@ -54,16 +56,15 @@ console.log("🎮 Game loaded!");
 document.addEventListener('DOMContentLoaded', function() {
   console.log("📄 DOM ready!");
   
-  // Get elements
   const coin = document.getElementById('coin');
   const scoreEl = document.getElementById('score');
   const coinResult = document.getElementById('coinResult');
   const resultMessage = document.getElementById('resultMessage');
   
-  // Function to refresh leaderboard
+
   async function refreshLeaderboard() {
     try {
-      const response = await fetch("/get-leaderboard");
+      const response = await fetch("/api/get-leaderboard");
       const data = await response.json();
       const table = document.getElementById("leaderboard");
       
@@ -91,101 +92,94 @@ document.addEventListener('DOMContentLoaded', function() {
   // Initial leaderboard load
   refreshLeaderboard();
   
-  // Coin flip function
-  async function flipCoin() {
-    console.log("🪙 Flipping coin!");
-    
 
-    const response = await fetch('/flip-coin', {
+
+  let flipInProgress = false;
+let hideTimeout = null;
+
+async function flipCoin() {
+  // Prevent overlapping flips
+  if (flipInProgress) return;
+  flipInProgress = true;
+
+  // Disable coin immediately
+  if (coin) coin.style.pointerEvents = 'none';
+
+  // Clear any pending hide timer from a previous flip
+  if (hideTimeout) {
+    clearTimeout(hideTimeout);
+    hideTimeout = null;
+  }
+
+  // Hide any previous result instantly
+  if (coinResult) coinResult.classList.remove('show');
+  if (resultMessage) resultMessage.classList.remove('show');
+
+  try {
+    const response = await fetch('/api/flip-coin', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
     });
-        
-      const data = await response.json();
-      const isWin = data.isWin;
-      const new_score = data.score;
+    const data = await response.json();
+    const isWin = data.isWin;
+    const newScore = data.score;
 
-
-  
-    // Disable button
-    if (coin) coin.style.pointerEvents = 'none';
-    
-    // Calculate the rotation
-    // For WIN: end on front (0 or 360 degrees)
-    // For LOSE: end on back (180 degrees)
-    const spins = 3; // Number of full rotations
+    // --- Coin flip animation ---
+    const spins = 3;
     const baseRotation = !isWin ? 0 : 180;
     const totalRotation = spins * 360 + baseRotation;
-    
-    // Reset coin position
+
     coin.style.transition = 'none';
     coin.style.transform = 'rotateY(0deg)';
-    void coin.offsetHeight; // Force reflow
-    
-    // Apply the flip with transition
+    void coin.offsetHeight; // force reflow
     coin.style.transition = 'transform 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
     coin.style.transform = `rotateY(${totalRotation}deg)`;
-    
-    // Wait for animation to complete
-    setTimeout(async () => {
-      // Show result
-      const resultText = isWin ? '🎉 X2 SCORE!' : '💀 LOSE YOUR SOCORE!';
-      
-      if (coinResult) {
-        coinResult.textContent = resultText;
-        coinResult.className = 'coin-result show ' + (isWin ? 'win' : 'lose');
-      }
-      
-      if (resultMessage) {
-        resultMessage.textContent = resultText;
-        resultMessage.className = 'result-message show ' + (isWin ? 'win' : 'lose');
-      }
-      
-      // Update score
-      try {
-                
-        if (scoreEl) {
-          scoreEl.textContent = data.new_score;
-          scoreEl.style.color = isWin ? '#2ecc71' : '#e74c3c';
-          
-          // Animate score
-          scoreEl.classList.remove('scale-up-vertical-center');
-          void scoreEl.offsetHeight;
-          scoreEl.classList.add('scale-up-vertical-center');
-          
-          setTimeout(() => {
-            scoreEl.style.color = '#3498db';
-          }, 1000);
-        }
-        
-        // Refresh leaderboard
-        await refreshLeaderboard();
-        
-      } catch (error) {
-        console.error("Error updating score:", error);
-      }
-      
-      // Re-enable button after a delay
+
+    // Wait for animation to finish
+    await new Promise(resolve => setTimeout(resolve, 1600));
+
+    // --- Show result ---
+    const resultText = isWin ? '🎉 X2 SCORE!' : '💀 LOSE YOUR SCORE!';
+    if (coinResult) {
+      coinResult.textContent = resultText;
+      coinResult.className = 'coin-result show ' + (isWin ? 'win' : 'lose');
+    }
+    if (resultMessage) {
+      resultMessage.textContent = resultText;
+      resultMessage.className = 'result-message show ' + (isWin ? 'win' : 'lose');
+    }
+
+    // Update score
+    if (scoreEl) {
+      scoreEl.textContent = data.new_score;
+      scoreEl.style.color = isWin ? '#2ecc71' : '#e74c3c';
+      scoreEl.classList.remove('scale-up-vertical-center');
+      void scoreEl.offsetHeight;
+      scoreEl.classList.add('scale-up-vertical-center');
       setTimeout(() => {
-        if (coin) coin.style.pointerEvents = 'auto';
-        
-        // Hide result messages
-        if (coinResult) {
-          setTimeout(() => {
-            coinResult.classList.remove('show');
-          }, 2000);
-        }
-        if (resultMessage) {
-          setTimeout(() => {
-            resultMessage.classList.remove('show');
-          }, 2000);
-        }
-      }, 1500);
-      
-    }, 1600); // Slightly longer than the transition
+        scoreEl.style.color = '#3498db';
+      }, 1000);
+    }
+
+    // Refresh leaderboard
+    await refreshLeaderboard();
+
+    // --- Hide result and re‑enable coin after a delay ---
+    hideTimeout = setTimeout(() => {
+      if (coinResult) coinResult.classList.remove('show');
+      if (resultMessage) resultMessage.classList.remove('show');
+      if (coin) coin.style.pointerEvents = 'auto';
+      flipInProgress = false;
+      hideTimeout = null;
+    }, 2500); // result stays visible for 2.5s, then disappears
+
+  } catch (error) {
+    console.error("Flip error:", error);
+    // Re‑enable on error
+    if (coin) coin.style.pointerEvents = 'auto';
+    flipInProgress = false;
   }
+}
   
   // Add click event to coin
   if (coin) {

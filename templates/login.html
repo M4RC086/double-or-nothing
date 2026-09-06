@@ -18,22 +18,27 @@
 </div>
 
 <script>
+
     document.getElementById('enterButton').addEventListener('click', async () => {
       const username = document.getElementById('usernameInput').value;
-      const response = await fetch('/login-username', {   
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username: username })
-      });
-
+        const response = await fetch('/api/login-username', {   
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username: username })
+        });
+      
       const data = await response.json();
       
       if (data.redirect) {
         window.location.href = data.redirect;
       }
+      if (data.error) {
+        alert("That's not a correct username :/ ");
+      }
     });
+
 </script>
 
 
