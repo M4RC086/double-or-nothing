@@ -1,5 +1,5 @@
 # DOUBLE OR NOTHING
-<img src="images/screenshot1.png" width="300"/>
+<img src="static/images/screenshot1.png" width="300"/>
 
 ## Description
 This is a dead simple web game where you can flip a coin with a possibility to double your score but you can also lose it. The idea is to have the highest score, but with the risk of losing everything if you want an even higher score. There's also a real time leaderboard.

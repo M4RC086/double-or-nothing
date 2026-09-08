@@ -4,7 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
   <title>Double or nothing</title>
+  
 </head>
 <body>
 
@@ -13,7 +15,7 @@
 
   <div class="score-parent">
     <h1>YOUR SCORE</h1>
-    <h1 id="score">{{score}}</h1>
+    <h1 id="score" style="color: #3498db;">{{score}}</h1>
   </div>
 
 
@@ -22,7 +24,7 @@
 
   <div class="coin-container">
     <div class="coin" id="coin">
-      <div class="coin-front">❌</div>
+      <div class="coin-front" id="coin-front">FLIP</div>
       <div class="coin-back">x2</div>
 
     </div>
@@ -114,6 +116,10 @@ async function flipCoin() {
   // Hide any previous result instantly
   if (coinResult) coinResult.classList.remove('show');
   if (resultMessage) resultMessage.classList.remove('show');
+  
+  setTimeout(() => {
+    document.getElementById("coin-front").textContent = '❌';
+}, 200);
 
   try {
     const response = await fetch('/api/flip-coin', {

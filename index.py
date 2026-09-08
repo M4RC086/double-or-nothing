@@ -1,7 +1,7 @@
 #!/bin/python
 from flask import Flask, render_template, jsonify, request, session, redirect
 from random import choice
-import os
+from os import urandom
 import sqlite3
 
 BEGIN_RANDOM_MIN = 80
@@ -9,7 +9,7 @@ score = 20
 
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
+app.secret_key = urandom(24)
 
 @app.route("/")
 def login():
