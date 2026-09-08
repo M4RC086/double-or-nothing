@@ -13,7 +13,7 @@
 
   <p>Playing as {{ username }}</p>
 
-  <div class="score-parent">
+  <div class="score-parent" id="score-parent">
     <h1>YOUR SCORE</h1>
     <h1 id="score" style="color: #3498db;">{{score}}</h1>
   </div>
@@ -42,7 +42,7 @@
     <tr><th>Username</th><th>Score</th></tr>
     {% for entry in leaderboard %}
       <tr>
-        <td>{{ entry[0] }}</td>
+        <td style="background-color: rgb(255, 0, 0);">{{ entry[0] }}</td>
         <td>{{ entry[1] }}</td>
       </tr>
     {% endfor %}
@@ -60,6 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   const coin = document.getElementById('coin');
   const scoreEl = document.getElementById('score');
+  const scoreParent = document.getElementById('score-parent')
   const coinResult = document.getElementById('coinResult');
   const resultMessage = document.getElementById('resultMessage');
   
@@ -140,9 +141,8 @@ async function flipCoin() {
     void coin.offsetHeight; // force reflow
     coin.style.transition = 'transform 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
     coin.style.transform = `rotateY(${totalRotation}deg)`;
-
     // Wait for animation to finish
-    await new Promise(resolve => setTimeout(resolve, 1600));
+    await new Promise(resolve => setTimeout(resolve, 1500));
 
     // --- Show result ---
     const resultText = isWin ? '🎉 X2 SCORE!' : '💀 LOSE YOUR SCORE!';
@@ -156,16 +156,29 @@ async function flipCoin() {
     }
 
     // Update score
-    if (scoreEl) {
-      scoreEl.textContent = data.new_score;
-      scoreEl.style.color = isWin ? '#2ecc71' : '#e74c3c';
-      scoreEl.classList.remove('scale-up-vertical-center');
-      void scoreEl.offsetHeight;
-      scoreEl.classList.add('scale-up-vertical-center');
-      setTimeout(() => {
-        scoreEl.style.color = '#3498db';
-      }, 1000);
+    
+    scoreEl.textContent = data.new_score;
+    scoreEl.style.color = isWin ? '#2ecc71' : '#e74c3c';
+    
+    // Animations
+    if (!isWin){
+      scoreParent.classList.remove('vibrate');
+    void scoreParent.offsetHeight;
+    scoreParent.classList.add('vibrate');
+
     }
+
+
+    scoreEl.classList.remove('scale-up-vertical-center');
+    void scoreEl.offsetHeight;
+    scoreEl.classList.add('scale-up-vertical-center');
+    setTimeout(() => {
+      scoreEl.style.color = '#3498db';
+    }, 2500);
+
+    
+
+    
 
     // Refresh leaderboard
     await refreshLeaderboard();
@@ -177,7 +190,7 @@ async function flipCoin() {
       if (coin) coin.style.pointerEvents = 'auto';
       flipInProgress = false;
       hideTimeout = null;
-    }, 2500); // result stays visible for 2.5s, then disappears
+    }, 1200); // result stays visible for 2.5s, then disappears
 
   } catch (error) {
     console.error("Flip error:", error);

@@ -14,7 +14,7 @@ body{
   justify-content: center;
   align-items: center;
   min-height: 80vh;       
-  background-color: #ebebebdd;
+  background-color: #dce6e9;
 }
 
 h1{
@@ -88,27 +88,6 @@ td {
 
 
 
-
-
-
-
-
-.scale-up-vertical-center {
-  animation: scale-up-vertical-center 0.4s ease;
-}
-
-@keyframes scale-up-vertical-center {
-  0% {
-    transform: scaleY(0.2);
-    opacity: 0.2;
-  }
-  100% {
-    transform: scaleY(1);
-    opacity: 1;
-  }
-}
-
-
 .coin-container {
   display: flex;
   flex-direction: column;
@@ -122,7 +101,7 @@ td {
   transform-style: preserve-3d;
   cursor: pointer;
   transition: transform 0.6s;
-
+border: 3px #00000000;
 }
 
 
@@ -177,3 +156,22 @@ td {
   -ms-user-select: none;
 }
 
+
+
+.scale-up-vertical-center {
+  animation: scale-up-vertical-center 0.4s ease;
+}
+
+@keyframes scale-up-vertical-center {
+  0% {
+    transform: scaleY(0.2);
+    opacity: 0.2;
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+.vibrate{animation:vibrate 0.2s linear both}
+@keyframes vibrate{0%{transform:translate(0)}20%{transform:translate(-2px,2px)}40%{transform:translate(-2px,-2px)}60%{transform:translate(2px,2px)}80%{transform:translate(2px,-2px)}100%{transform:translate(0)}}
