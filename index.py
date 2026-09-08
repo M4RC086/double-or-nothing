@@ -7,6 +7,7 @@ import sqlite3
 BEGIN_RANDOM_MIN = 80
 score = 20
 
+
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
