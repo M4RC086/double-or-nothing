@@ -7,9 +7,10 @@ import sqlite3
 BEGIN_RANDOM_MIN = 80
 score = 20
 
-
 app = Flask(__name__)
 app.secret_key = urandom(24)
+
+
 
 @app.route("/")
 def login():
@@ -28,12 +29,11 @@ def game():
 
 
 
-# From js
+# -- APIs for the frontend --
 @app.route('/api/flip-coin', methods=['POST'])
 def flipCoin(): 
     score = get_db_score(session["username"])
     
-
     is_win = choice([True, True, True, False])
     if (is_win or score <= BEGIN_RANDOM_MIN):
         score *= 2
@@ -44,7 +44,7 @@ def flipCoin():
 
     set_db_score(session["username"], score)
 
-    return jsonify({"isWin": is_win, "new_score": score}) # I am
+    return jsonify({"isWin": is_win, "new_score": score})
 
 
 @app.route('/api/login-username', methods=['POST'])
@@ -56,8 +56,7 @@ def loginUsername():
     
     if not all(char == ' ' for char in data.get("username")):
         username = data.get("username")
-        print("Username", username) #Todelete
-    
+
         session['username'] = username
         session['verified'] = True
 
@@ -67,7 +66,6 @@ def loginUsername():
     return jsonify({"error": True})
 
 
-
 @app.route("/api/get-leaderboard")
 def getLeaderboard():
     return jsonify({"leaderboard": get_db_leaderboard()})
@@ -75,8 +73,6 @@ def getLeaderboard():
 
 
 #-- DATABASE --
-
-
 def init_db():
     conn = _db_connection()
     cursor = conn.cursor()
@@ -112,7 +108,6 @@ def get_db_score(user):
     cur = cursor.execute(f"SELECT score FROM stats WHERE user = '{user}'")
     conn.commit()
     return cur.fetchall()[0][0]
-    
 
 def set_db_score(user, new_score):
     conn = _db_connection()
@@ -135,6 +130,5 @@ def create_db_user(new_user):
 
 if __name__ == "__main__":
     init_db()
-    print(get_db_leaderboard()) # Todelete
     app.run(debug=True, host="0.0.0.0", port=5000)
     

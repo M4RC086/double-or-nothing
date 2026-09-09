@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const scoreEl = document.getElementById('score');
   const scoreParent = document.getElementById('score-parent')
   const coinResult = document.getElementById('coinResult');
+  const coinFront = document.getElementById("coin-front");
   const resultMessage = document.getElementById('resultMessage');
   
 
@@ -119,7 +120,7 @@ async function flipCoin() {
   if (resultMessage) resultMessage.classList.remove('show');
   
   setTimeout(() => {
-    document.getElementById("coin-front").textContent = '❌';
+    coinFront.textContent = '❌';
 }, 200);
 
   try {
