@@ -15,7 +15,7 @@
 
   <div class="score-parent" id="score-parent">
     <h1>YOUR SCORE</h1>
-    <h1 id="score" style="color: #3498db;">{{score}}</h1>
+    <h1 id="score" style="color: #3a2dd2;">{{score}}</h1>
   </div>
 
 
@@ -28,7 +28,7 @@
       <div class="coin-back">x2</div>
 
     </div>
-    <p id="coinResult" class="coin-result"></p>
+      <p id="coinResult" class="coin-result">You are not supposed to see this</p>
   </div>
 
 
@@ -42,7 +42,7 @@
     <tr><th>Username</th><th>Score</th></tr>
     {% for entry in leaderboard %}
       <tr>
-        <td style="background-color: rgb(255, 0, 0);">{{ entry[0] }}</td>
+        <td>{{ entry[0] }}</td>
         <td>{{ entry[1] }}</td>
       </tr>
     {% endfor %}
@@ -71,34 +71,51 @@ document.addEventListener('DOMContentLoaded', function() {
       const response = await fetch("/api/get-leaderboard");
       const data = await response.json();
       const table = document.getElementById("leaderboard");
+      const username = data.username;
       
-      if (table) {
-        let html = `<tr><th>Username</th><th>Score</th></tr>`;
-        if (data.leaderboard && data.leaderboard.length > 0) {
-          data.leaderboard.forEach(entry => {
+      
+      let html = `<tr><th>Username</th><th>Score</th></tr>`;
+        
+        
+        
+        data.leaderboard.forEach(entry => {
+
+          if (entry[0] == username) {
+          
             html += `
               <tr>
-                <td>${entry[0]}</td>
-                <td>${entry[1]}</td>
+                <td style="color: #3a2dd2;">${entry[0]}</td>
+                <td style="color: #3a2dd2;">${entry[1]}</td>
               </tr>
             `;
-          });
-        } else {
-          html += `<tr><td colspan="2">No entries yet</td></tr>`;
-        }
+        
+          }
+
+          else{
+            console.log(entry[0]);
+            console.log(username);
+            html += `
+            <tr>
+              <td>${entry[0]}</td>
+              <td>${entry[1]}</td>
+            </tr>
+            `;
+
+          }
+        });
+        
         table.innerHTML = html;
-      }
-    } catch (error) {
+    }
+     catch (error) {
       console.error("Leaderboard error:", error);
     }
   }
   
   // Initial leaderboard load
-  refreshLeaderboard();
-  
+  refreshLeaderboard();  
 
 
-  let flipInProgress = false;
+let flipInProgress = false;
 let hideTimeout = null;
 
 async function flipCoin() {
@@ -146,7 +163,7 @@ async function flipCoin() {
     await new Promise(resolve => setTimeout(resolve, 1500));
 
     // --- Show result ---
-    const resultText = isWin ? '🎉 X2 SCORE!' : '💀 LOSE YOUR SCORE!';
+    const resultText = isWin ? '🍀 X2 SCORE!' : '💀 LOSE YOUR SCORE!';
     if (coinResult) {
       coinResult.textContent = resultText;
       coinResult.className = 'coin-result show ' + (isWin ? 'win' : 'lose');
@@ -159,7 +176,7 @@ async function flipCoin() {
     // Update score
     
     scoreEl.textContent = data.new_score;
-    scoreEl.style.color = isWin ? '#2ecc71' : '#e74c3c';
+    scoreEl.style.color = isWin ? '#2ecc71' : '#f25914';
     
     // Animations
     if (!isWin){
@@ -174,7 +191,7 @@ async function flipCoin() {
     void scoreEl.offsetHeight;
     scoreEl.classList.add('scale-up-vertical-center');
     setTimeout(() => {
-      scoreEl.style.color = '#3498db';
+      scoreEl.style.color = '#3a2dd2';
     }, 2500);
 
     
@@ -191,7 +208,7 @@ async function flipCoin() {
       if (coin) coin.style.pointerEvents = 'auto';
       flipInProgress = false;
       hideTimeout = null;
-    }, 1200); // result stays visible for 2.5s, then disappears
+    }, 1000);
 
   } catch (error) {
     console.error("Flip error:", error);

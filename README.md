@@ -21,7 +21,6 @@ source .venv/bin/activate # Linux
 pip install -r requirements.txt
 ```
 
-## Usage
 
 ## AI declaration
 I didn't know how to use javascript so I used Claude and Deepseek to understand how js works. I took the time to understand what the LLMs were saying.

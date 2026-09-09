@@ -68,7 +68,7 @@ def loginUsername():
 
 @app.route("/api/get-leaderboard")
 def getLeaderboard():
-    return jsonify({"leaderboard": get_db_leaderboard()})
+    return jsonify({"leaderboard": get_db_leaderboard(), "username":session['username']})
 
 
 

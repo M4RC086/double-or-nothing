@@ -134,6 +134,7 @@ border: 3px #00000000;
   margin-top: 15px;
   opacity: 0;
   transition: opacity 0.5s;
+  text-shadow: 0 0 2px rgba(0,0,0,0.3);
 }
 
 .coin-result.show {
