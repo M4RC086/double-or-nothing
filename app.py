@@ -32,21 +32,13 @@ def game():
 
 
 # -- APIs for the frontend --
-@app.route('/api/flip-coin', methods=['POST'])
-def flipCoin(): 
-    score = get_db_score(session["username"])
-    
-    is_win = choice([True, True, True, False])
-    if (is_win or score <= BEGIN_RANDOM_MIN):
-        score *= 2
-        is_win = True
-    else:
-        score = 20
-    
+@app.route('/api/updateScore', methods=['POST'])
+def updateScore():
+    data = request.get_json()
+    new_score = data.get("newScore")
 
-    set_db_score(session["username"], score)
-
-    return jsonify({"isWin": is_win, "new_score": score})
+    set_db_score(session["username"], new_score)
+    return 'Updated'
 
 
 @app.route('/api/login-username', methods=['POST'])

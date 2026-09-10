@@ -92,8 +92,6 @@ document.addEventListener('DOMContentLoaded', function() {
           }
 
           else{
-            console.log(entry[0]);
-            console.log(username);
             html += `
             <tr>
               <td>${entry[0]}</td>
@@ -122,14 +120,13 @@ let hideTimeout = null;
 
 
 async function flipCoin() {
-  // Prevent overlapping flips
+  
+
   if (flipInProgress) return;
   flipInProgress = true;
 
-  // Disable coin immediately
   if (coin) coin.style.pointerEvents = 'none';
 
-  // Clear any pending hide timer from a previous flip
   if (hideTimeout) {
     clearTimeout(hideTimeout);
     hideTimeout = null;
@@ -142,14 +139,16 @@ async function flipCoin() {
   
 
   try {
-    const response = await fetch('/api/flip-coin', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-    });
-    const data = await response.json();
-    const isWin = data.isWin;
-    const newScore = data.score;
+    let newScore;
+    const isWin = [false,true,true,true][Math.floor(Math.random()*4)]
+    if (isWin){
+      newScore = 2*scoreEl.textContent;    
+    }else{
+      newScore = 20;
+    }
 
+
+    
     // --- Coin flip animation ---
     setTimeout(() => {
     coinFront.textContent = '❌';
@@ -180,10 +179,11 @@ async function flipCoin() {
     }
 
     // Update score
-    
-    scoreEl.textContent = data.new_score;
+    scoreEl.textContent = newScore;
     scoreEl.style.color = isWin ? '#2ecc71' : '#f25914';
     
+
+
     // Animations
     if (!isWin){
       scoreParent.classList.remove('vibrate');
@@ -191,7 +191,7 @@ async function flipCoin() {
     scoreParent.classList.add('vibrate');
 
     }
-
+    
 
     scoreEl.classList.remove('scale-up-vertical-center');
     void scoreEl.offsetHeight;
@@ -201,7 +201,11 @@ async function flipCoin() {
     }, 2500);
 
     
-
+    await fetch('/api/updateScore', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 'newScore':  newScore})
+    });
     
 
     // Refresh leaderboard
@@ -218,20 +222,15 @@ async function flipCoin() {
 
   } catch (error) {
     console.error("Flip error:", error);
+    
     // Re‑enable on error
     if (coin) coin.style.pointerEvents = 'auto';
     flipInProgress = false;
   }
 }
   
-  // Add click event to coin
-  if (coin) {
-    coin.addEventListener('click', flipCoin);
-  } else {
-    console.error("❌ Coin element not found!");
-  }
-  
-  
+
+  coin.addEventListener('click', flipCoin);
   console.log("✅ Game ready!");
 });
 
