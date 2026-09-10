@@ -118,6 +118,9 @@ document.addEventListener('DOMContentLoaded', function() {
 let flipInProgress = false;
 let hideTimeout = null;
 
+
+
+
 async function flipCoin() {
   // Prevent overlapping flips
   if (flipInProgress) return;
@@ -136,9 +139,7 @@ async function flipCoin() {
   if (coinResult) coinResult.classList.remove('show');
   if (resultMessage) resultMessage.classList.remove('show');
   
-  setTimeout(() => {
-    coinFront.textContent = '❌';
-}, 200);
+  
 
   try {
     const response = await fetch('/api/flip-coin', {
@@ -150,6 +151,11 @@ async function flipCoin() {
     const newScore = data.score;
 
     // --- Coin flip animation ---
+    setTimeout(() => {
+    coinFront.textContent = '❌';
+    }, 200);
+
+
     const spins = 3;
     const baseRotation = !isWin ? 0 : 180;
     const totalRotation = spins * 360 + baseRotation;
@@ -208,7 +214,7 @@ async function flipCoin() {
       if (coin) coin.style.pointerEvents = 'auto';
       flipInProgress = false;
       hideTimeout = null;
-    }, 1000);
+    }, 300);
 
   } catch (error) {
     console.error("Flip error:", error);

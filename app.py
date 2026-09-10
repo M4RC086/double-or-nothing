@@ -1,8 +1,9 @@
 #!/bin/python
 from flask import Flask, render_template, jsonify, request, session, redirect
 from random import choice
-from os import urandom
-import sqlite3
+from os import urandom, getenv
+from dotenv import load_dotenv
+import psycopg2
 
 BEGIN_RANDOM_MIN = 80
 score = 20
@@ -10,7 +11,8 @@ score = 20
 app = Flask(__name__)
 app.secret_key = urandom(24)
 
-
+load_dotenv()
+SUPABASE_URL = getenv("DATABASE_URL")
 
 @app.route("/")
 def login():
@@ -73,59 +75,78 @@ def getLeaderboard():
 
 
 #-- DATABASE --
+def _db_connection():
+    conn = psycopg2.connect(SUPABASE_URL)
+    return conn
+
+
 def init_db():
     conn = _db_connection()
     cursor = conn.cursor()
+
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS stats (
-            user TEXT,
+            username TEXT,
             score INTEGER
         )
     """)
+
     conn.commit()
+    cursor.close()
     conn.close()
 
-def _db_connection():
-    conn = None
-    try:
-        conn = sqlite3.connect("stats.sqlite")
-    except sqlite3.error as e:
-        print(e)
-    return conn
 
 def get_db_leaderboard():
     conn = _db_connection()
     cursor = conn.cursor()
 
-    cur = cursor.execute("SELECT * FROM stats ORDER BY score DESC LIMIT 10")
-    conn.commit()
-    return cur.fetchall()
+    cursor.execute("SELECT * FROM stats ORDER BY score DESC LIMIT 10")
+    rows = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+    return rows
+
 
 def get_db_score(user):
     conn = _db_connection()
     cursor = conn.cursor()
 
-    cur = cursor.execute(f"SELECT score FROM stats WHERE user = '{user}'")
-    conn.commit()
-    return cur.fetchall()[0][0]
+    cursor.execute("SELECT score FROM stats WHERE username = %s", (user,))
+    row = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    if row is None:
+        return None  
+    return row[0]
+
 
 def set_db_score(user, new_score):
     conn = _db_connection()
     cursor = conn.cursor()
 
-    cur = cursor.execute(f"UPDATE stats SET score = {new_score} WHERE user = '{user}'")
+    cursor.execute("UPDATE stats SET score = %s WHERE username = %s", (new_score, user))
+
     conn.commit()
+    cursor.close()
+    conn.close()
+
 
 def create_db_user(new_user):
     conn = _db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM stats WHERE user = ?", (new_user,))
+    cursor.execute("SELECT * FROM stats WHERE username = %s", (new_user,))
     result = cursor.fetchone()
 
     if not result:
-        cur = cursor.execute(f"INSERT INTO stats VALUES ('{new_user}', 20);")
+        cursor.execute("INSERT INTO stats (username, score) VALUES (%s, %s)", (new_user, 20))
         conn.commit()
+
+    cursor.close()
+    conn.close()
     
 
 if __name__ == "__main__":
