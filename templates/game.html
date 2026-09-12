@@ -104,18 +104,6 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         });
 
-        if (!isUser){
-          html += `
-          </br>
-            <table id="leaderboard">
-              
-                <tr>
-                  <td style="color: #3a2dd2";>${username}</td>
-                  <td style="color: #3a2dd2";>${userScore}</td>
-                </tr>
-            </table>
-            `;
-        }
 
         
         table.innerHTML = html;
@@ -159,7 +147,7 @@ async function flipCoin() {
 
   try {
     let newScore;
-    const isWin = [false,true,true,true][Math.floor(Math.random()*4)]
+    const isWin = [false,true,true,true,true][Math.floor(Math.random()*4)]
     if (isWin){
       newScore = 2*scoreEl.textContent;    
     }else{
