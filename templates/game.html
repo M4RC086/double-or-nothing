@@ -183,6 +183,7 @@ async function flipCoin() {
     void coin.offsetHeight; // force reflow
     coin.style.transition = 'transform 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
     coin.style.transform = `rotateY(${totalRotation}deg)`;
+    
     // Wait for animation to finish
     await new Promise(resolve => setTimeout(resolve, 1500));
 
@@ -202,19 +203,17 @@ async function flipCoin() {
     scoreEl.style.color = isWin ? '#2ecc71' : '#f25914';
     
 
-
-    // Animations
-    if (!isWin){
-      scoreParent.classList.remove('vibrate');
-    void scoreParent.offsetHeight;
-    scoreParent.classList.add('vibrate');
-
-    }
-    
-
     scoreEl.classList.remove('scale-up-vertical-center');
     void scoreEl.offsetHeight;
     scoreEl.classList.add('scale-up-vertical-center');
+
+
+    await fetch('/api/updateScore', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 'newScore':  newScore})
+    });
+
     setTimeout(() => {
       scoreEl.style.color = '#3a2dd2';
     }, 1300);
@@ -222,17 +221,22 @@ async function flipCoin() {
     
     
 
-    // Refresh leaderboard
+  
+    
+    
+
     await refreshLeaderboard();
 
-    // --- Hide result and re‑enable coin after a delay ---
-    hideTimeout = setTimeout(() => {
-      if (coinResult) coinResult.classList.remove('show');
-      if (resultMessage) resultMessage.classList.remove('show');
-      if (coin) coin.style.pointerEvents = 'auto';
-      flipInProgress = false;
-      hideTimeout = null;
-    }, 300);
+    // No delay bc the delay is made by the time the databse fetch take
+    
+    if (coinResult) coinResult.classList.remove('show');
+    if (resultMessage) resultMessage.classList.remove('show');
+    if (coin) coin.style.pointerEvents = 'auto';
+    flipInProgress = false;
+    hideTimeout = null;
+    
+
+    
 
   } catch (error) {
     console.error("Flip error:", error);
@@ -242,11 +246,6 @@ async function flipCoin() {
     flipInProgress = false;
   }
 
-  await fetch('/api/updateScore', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 'newScore':  newScore})
-    });
     
 }
 

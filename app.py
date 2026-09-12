@@ -38,6 +38,7 @@ def updateScore():
     new_score = data.get("newScore")
 
     set_db_score(session["username"], new_score)
+    print("DB updated")
     return 'Updated'
 
 
