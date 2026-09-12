@@ -125,6 +125,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
   
+
+
+
   // Initial leaderboard load
   refreshLeaderboard();  
 
@@ -217,11 +220,6 @@ async function flipCoin() {
     }, 1300);
 
     
-    await fetch('/api/updateScore', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 'newScore':  newScore})
-    });
     
 
     // Refresh leaderboard
@@ -243,8 +241,14 @@ async function flipCoin() {
     if (coin) coin.style.pointerEvents = 'auto';
     flipInProgress = false;
   }
+
+  await fetch('/api/updateScore', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 'newScore':  newScore})
+    });
+    
 }
-  
 
   coin.addEventListener('click', flipCoin);
   console.log("✅ Game ready!");
