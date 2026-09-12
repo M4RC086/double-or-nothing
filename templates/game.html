@@ -37,7 +37,7 @@
 
 
 
-  <h1>Top 10</h1>
+  <h1>Top 5</h1>
  <table id="leaderboard">
     <tr><th>Username</th><th>Score</th></tr>
     {% for entry in leaderboard %}
@@ -72,7 +72,8 @@ document.addEventListener('DOMContentLoaded', function() {
       const data = await response.json();
       const table = document.getElementById("leaderboard");
       const username = data.username;
-      
+      const userScore = data.user_score;
+      let isUser = false;
       
       let html = `<tr><th>Username</th><th>Score</th></tr>`;
         
@@ -81,7 +82,8 @@ document.addEventListener('DOMContentLoaded', function() {
         data.leaderboard.forEach(entry => {
 
           if (entry[0] == username) {
-          
+            isUser = true;
+
             html += `
               <tr>
                 <td style="color: #3a2dd2;">${entry[0]}</td>
@@ -101,6 +103,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
           }
         });
+
+        if (!isUser){
+          html += `
+          </br>
+            <table id="leaderboard">
+              
+                <tr>
+                  <td style="color: #3a2dd2";>${username}</td>
+                  <td style="color: #3a2dd2";>${userScore}</td>
+                </tr>
+            </table>
+            `;
+        }
+
         
         table.innerHTML = html;
     }

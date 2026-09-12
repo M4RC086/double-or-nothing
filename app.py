@@ -92,7 +92,7 @@ def get_db_leaderboard():
     conn = _db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM stats ORDER BY score DESC LIMIT 10")
+    cursor.execute("SELECT * FROM stats ORDER BY score DESC LIMIT 5")
     rows = cursor.fetchall()
 
     cursor.close()
