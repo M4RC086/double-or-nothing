@@ -195,6 +195,12 @@ async function flipCoin() {
     void scoreEl.offsetHeight;
     scoreEl.classList.add('scale-up-vertical-center');
 
+    if (!isWin){
+      scoreParent.classList.remove('vibrate');
+      void scoreEl.offsetHeight;
+      scoreParent.classList.add('vibrate');
+    }
+
 
     await fetch('/api/updateScore', {
       method: 'POST',
